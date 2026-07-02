@@ -59,27 +59,17 @@
                     // 转义，防止用户输入被当作 HTML 执行
                     let escaped = escapeHtml(line);
 
-                    // 3. [神秘食材随机劵] 颜色大红
+                    // 仅保留 [神秘食材随机劵] 的颜色替换 (大红)
                     escaped = escaped.replace(
                         /\[神秘食材随机劵\]/g,
                         '<span style="color: red;">[神秘食材随机劵]</span>'
                     );
-                    // 4. [星星碎片] 颜色黄色
-                    escaped = escaped.replace(
-                        /\[星星碎片\]/g,
-                        '<span style="color: yellow;">[星星碎片]</span>'
-                    );
-                    // 5. [搬家卡] 颜色绿色
-                    escaped = escaped.replace(
-                        /\[搬家卡\]/g,
-                        '<span style="color: green;">[搬家卡]</span>'
-                    );
 
-                    // 1. 有“许愿果”的行背景淡黄
+                    // 1. 有“许愿果”的行背景改为黄色
                     if (hasXuyuanguo) {
-                        return `<div style="background-color: lightyellow;">${escaped}</div>`;
+                        return `<div style="background-color: yellow;">${escaped}</div>`;
                     }
-                    // 2. 有“休息”的行背景淡灰（若同时有许愿果，优先淡黄）
+                    // 2. 有“休息”的行背景淡灰（若同时有许愿果，优先黄色背景）
                     else if (hasXiuxi) {
                         return `<div style="background-color: lightgray;">${escaped}</div>`;
                     }
