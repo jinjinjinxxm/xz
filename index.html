@@ -9,7 +9,8 @@
             font-size: 16px;
             line-height: 1.6;
             font-family: system-ui, sans-serif;
-            margin: 40px;
+            /* 上边距改小，左右和底部保持原样 */
+            margin: 10px 40px 40px 40px;
             color: #333;
             white-space: pre-wrap;
             /* 保留你在 txt 里敲的换行和空格 */
@@ -22,7 +23,7 @@
         fetch('./content.txt')
             .then(res => res.text())
             .then(text => {
-                // trimStart() 去除 txt 文件开头的空行和空白，让第一行文字紧贴顶部（不含 body 的 margin）
+                // trimStart() 去除 txt 文件开头的空行和空白
                 document.getElementById('content').textContent = text.trimStart();
             })
             .catch(() => {
