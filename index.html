@@ -5,16 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的分享页</title>
     <style>
+        /* 整体重置，避免浏览器默认边距干扰 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-size: 16px;
             line-height: 1.6;
             font-family: system-ui, sans-serif;
-            /* 上边距改小，左右和底部保持原样 */
-            margin: -10px 40px 40px 40px;
             color: #333;
             white-space: pre-wrap;
-            /* 保留你在 txt 里敲的换行和空格 */
+            /* 上边距完全为 0，左右和底部留出舒适的阅读间距 */
+            padding: 0 40px 40px 40px;
+        }
+
+        main {
+            /* 确保 main 标签本身没有额外空隙 */
+            margin: 0;
+            padding: 0;
         }
     </style>
 </head>
+<body>
+    <main id="content">加载中...</main>
+    <script>
+        fetch('./content.txt')
+            .then(res => res.text())
+            .then(text => {
+                // 关键一步：去掉 txt 文件最前面的所有空行和空格
+                document.getElementById('content').textContent = text.trimStart();
+            })
+            .catch(() => {
+                document.getElementById('content').textContent = '内容加载失败，请检查网络或文件。';
+            });
+    </script>
+</body>
 </html>
