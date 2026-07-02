@@ -12,14 +12,14 @@
         }
 
         body {
-    font-size: 16px;
-    line-height: 1.9;
-    max-width: 750px;
-    margin: 0 auto 30px;
-    padding: 0 20px;
-    font-family: system-ui;
-    white-space: pre-wrap; 
-}
+            font-size: 16px;
+            line-height: 1.9;
+            max-width: 750px;
+            margin: 0 auto 30px;
+            padding: 0 20px;
+            font-family: system-ui;
+            white-space: pre-wrap;
+        }
 
         main {
             margin: 0;
@@ -30,15 +30,67 @@
 <body>
     <main id="content">加载中...</main>
     <script>
+        // HTML 转义函数，防止 XSS 并保证显示原字符
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
         fetch('./content.txt')
             .then(res => res.text())
             .then(text => {
-                // ===== 新增：三行洗白，把所有“异类空格”统一成普通半角空格 =====
+                // ===== 清洗空格 =====
                 text = text.replace(/\u3000/g, ' ');   // 全角空格 → 半角空格
-                text = text.replace(/\t/g, '    ');    // 制表符(Tab) → 4个半角空格
-                text = text.replace(/\u00A0/g, ' ');   // 不间断空格(&nbsp;) → 半角空格
-                // ===== 清洗完毕，下面正常显示 =====
-                document.getElementById('content').textContent = text;
+                text = text.replace(/\t/g, '    ');    // 制表符 → 4个半角空格
+                text = text.replace(/\u00A0/g, ' ');   // 不间断空格 → 半角空格
+
+                // 按行分割
+                const lines = text.split('\n');
+
+                // 逐行处理，生成 HTML
+                const htmlLines = lines.map(line => {
+                    // 判断是否包含关键词（用原始行，未转义）
+                    const hasXuyuanguo = line.includes('许愿果');
+                    const hasXiuxi = line.includes('休息');
+
+                    // 转义，防止用户输入被当作 HTML 执行
+                    let escaped = escapeHtml(line);
+
+                    // 3. [神秘食材随机劵] 颜色大红
+                    escaped = escaped.replace(
+                        /\[神秘食材随机劵\]/g,
+                        '<span style="color: red;">[神秘食材随机劵]</span>'
+                    );
+                    // 4. [星星碎片] 颜色黄色
+                    escaped = escaped.replace(
+                        /\[星星碎片\]/g,
+                        '<span style="color: yellow;">[星星碎片]</span>'
+                    );
+                    // 5. [搬家卡] 颜色绿色
+                    escaped = escaped.replace(
+                        /\[搬家卡\]/g,
+                        '<span style="color: green;">[搬家卡]</span>'
+                    );
+
+                    // 1. 有“许愿果”的行背景淡黄
+                    if (hasXuyuanguo) {
+                        return `<div style="background-color: lightyellow;">${escaped}</div>`;
+                    }
+                    // 2. 有“休息”的行背景淡灰（若同时有许愿果，优先淡黄）
+                    else if (hasXiuxi) {
+                        return `<div style="background-color: lightgray;">${escaped}</div>`;
+                    }
+                    // 其他行无背景
+                    else {
+                        return `<div>${escaped}</div>`;
+                    }
+                });
+
+                // 将处理后的 HTML 插入页面
+                document.getElementById('content').innerHTML = htmlLines.join('');
             })
             .catch(() => {
                 document.getElementById('content').textContent = '内容加载失败，请检查文件。';
