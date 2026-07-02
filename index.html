@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的分享页</title>
     <style>
-        /* 整体重置，避免浏览器默认边距干扰 */
         * {
             margin: 0;
             padding: 0;
@@ -18,12 +17,10 @@
             font-family: system-ui, sans-serif;
             color: #333;
             white-space: pre-wrap;
-            /* 上边距完全为 0，左右和底部留出舒适的阅读间距 */
             padding: 0 40px 40px 40px;
         }
 
         main {
-            /* 确保 main 标签本身没有额外空隙 */
             margin: 0;
             padding: 0;
         }
@@ -35,10 +32,15 @@
         fetch('./content.txt')
             .then(res => res.text())
             .then(text => {
+                // ===== 新增：三行洗白，把所有“异类空格”统一成普通半角空格 =====
+                text = text.replace(/\u3000/g, ' ');   // 全角空格 → 半角空格
+                text = text.replace(/\t/g, '    ');    // 制表符(Tab) → 4个半角空格
+                text = text.replace(/\u00A0/g, ' ');   // 不间断空格(&nbsp;) → 半角空格
+                // ===== 清洗完毕，下面正常显示 =====
                 document.getElementById('content').textContent = text;
             })
             .catch(() => {
-                document.getElementById('content').textContent = '内容加载失败，请检查网络或文件。';
+                document.getElementById('content').textContent = '内容加载失败，请检查文件。';
             });
     </script>
 </body>
